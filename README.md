@@ -37,7 +37,7 @@ Untuk username dengan **6 karakter** → **32 variasi** email.
 | ✉ mailto: | Buka klien email dengan semua variasi sebagai BCC |
 | 💬 Share ke WA | Kirim daftar email ke nomor WhatsApp manapun |
 | 🕒 Riwayat | Simpan & reload riwayat generate (localStorage) |
-| 🌐 Custom Domain | Pilih domain populer atau tambahkan domain sendiri |
+| ⌨️ Custom Domain | Pilih domain populer atau tambahkan domain sendiri |
 | 📱 Responsif | Tampilan optimal di desktop & mobile |
 
 ---
