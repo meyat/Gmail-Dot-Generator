@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Dot Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">DotMail</span>
+        <span class="logo-badge">Generator</span>
+      </div>
+      <p class="header-tagline">Hasilkan semua variasi titik dari satu alamat email</p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+
+    <!-- Generator Card -->
+    <section class="card generator-card">
+      <div class="card-header">
+        <h2 class="card-title">Generate Email</h2>
+        <p class="card-desc">Masukkan username email dan pilih domain</p>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group flex-grow">
+          <label class="input-label" for="emailInput">Username Email</label>
+          <input
+            type="text"
+            id="emailInput"
+            class="text-input mono"
+            placeholder="contoh: johndoe"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <div class="input-group domain-group">
+          <label class="input-label" for="domainSelect">Domain</label>
+          <select id="domainSelect" class="select-input mono">
+            <option value="@gmail.com">@gmail.com</option>
+            <option value="@googlemail.com">@googlemail.com</option>
+            <option value="@yahoo.com">@yahoo.com</option>
+            <option value="@yahoo.co.id">@yahoo.co.id</option>
+            <option value="@outlook.com">@outlook.com</option>
+            <option value="@hotmail.com">@hotmail.com</option>
+            <option value="@icloud.com">@icloud.com</option>
+            <option value="@proton.me">@proton.me</option>
+            <option value="@protonmail.com">@protonmail.com</option>
+            <option value="@zoho.com">@zoho.com</option>
+            <option value="custom">✎ Custom Domain...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Custom domain input (hidden by default) -->
+      <div class="input-group" id="customDomainGroup" style="display:none;">
+        <label class="input-label" for="customDomainInput">Custom Domain</label>
+        <input
+          type="text"
+          id="customDomainInput"
+          class="text-input mono"
+          placeholder="@domain.com"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-primary" id="generateBtn">
+          <span class="btn-icon">⚡</span> Generate
+        </button>
+        <button class="btn btn-ghost" id="clearBtn">
+          <span class="btn-icon">✕</span> Bersihkan
+        </button>
+      </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="statsBar" style="display:none;">
+      <div class="stat-chip">
+        <span class="stat-num" id="totalCount">0</span>
+        <span class="stat-label">Total Email</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-num" id="uniqueCount">0</span>
+        <span class="stat-label">Unik</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-num" id="dotCount">0</span>
+        <span class="stat-label">Posisi Titik</span>
+      </div>
+    </div>
+
+    <!-- Results Card -->
+    <section class="card results-card" id="resultsSection" style="display:none;">
+      <div class="card-header results-header">
+        <div>
+          <h2 class="card-title">Hasil Generasi</h2>
+          <p class="card-desc" id="resultSubtitle">Semua variasi email ditemukan</p>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="copyAllBtn" title="Salin Semua">
+            <span>⎘</span> Salin Semua
+          </button>
+          <div class="dropdown-wrap">
+            <button class="tool-btn tool-btn-accent" id="exportMenuBtn" title="Export">
+              <span>↓</span> Export
+            </button>
+            <div class="dropdown-menu" id="exportMenu">
+              <button class="dropdown-item" id="exportCsvBtn">📄 Export CSV</button>
+              <button class="dropdown-item" id="exportExcelBtn">📊 Export Excel (.xlsx)</button>
+              <button class="dropdown-item" id="exportPdfBtn">📋 Export PDF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search filter -->
+      <div class="search-filter">
+        <input type="text" id="filterInput" class="text-input mono small" placeholder="🔍  Filter email..." />
+      </div>
+
+      <!-- Email list -->
+      <div class="email-list-wrap">
+        <ul class="email-list" id="emailList"></ul>
+      </div>
+
+      <!-- Share Section -->
+      <div class="share-section">
+        <h3 class="share-title">Kirim / Bagikan</h3>
+        <div class="share-row">
+          <button class="share-btn mailto-btn" id="mailtoBtn">
+            <span class="share-icon">✉</span>
+            <span>Buka mailto:</span>
+          </button>
+          <div class="wa-group">
+            <input
+              type="text"
+              id="waNumber"
+              class="text-input mono small wa-input"
+              placeholder="08xx / 62xx / +62xx"
+            />
+            <button class="share-btn wa-btn" id="waBtn">
+              <span class="share-icon">💬</span>
+              <span>Share ke WA</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- History Card -->
+    <section class="card history-card" id="historySection">
+      <div class="card-header">
+        <h2 class="card-title">Riwayat Generate</h2>
+        <button class="tool-btn" id="clearHistoryBtn" title="Hapus Riwayat">✕ Hapus Semua</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <div class="empty-state" id="historyEmpty">
+          <span class="empty-icon">📭</span>
+          <p>Belum ada riwayat. Coba generate email pertama kamu!</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>DotMail Generator &mdash; Dibuat dengan ♥ menggunakan HTML, CSS &amp; JavaScript murni</p>
+    <p class="footer-note">Gmail mengabaikan titik dalam username — semua variasi dikirim ke inbox yang sama</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
