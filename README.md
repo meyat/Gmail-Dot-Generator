@@ -62,12 +62,6 @@ Edit bagian `<select id="domainSelect">` di `index.html`:
 <option value="@perusahaan.com">@perusahaan.com</option>
 ```
 
-### Ubah Warna Aksen
-Edit variabel CSS di `style.css`:
-```css
---accent: #6366f1;   /* Ubah ke warna yang diinginkan */
-```
-
 ---
 
 ## 📜 Lisensi
